@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="CodeForge — A professional online compiler supporting Python, JavaScript, C, C++, Java, Go, Rust, Ruby, and PHP.">
+    <title>CodeForge — Online Compiler</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- CodeMirror Core -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/eclipse.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.css">
+
+    <!-- App Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/php/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/ruby/ruby.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/go/go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/rust/rust.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/shell/shell.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/comment/comment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/selection/active-line.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js"></script>
+</head>
+
+<body>
+    <!-- App Shell -->
+    <div id="app" class="app-shell">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header" role="banner">
+            <div class="header-left">
+                <div class="brand">
+                    <div class="brand-logo" aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="28" height="28" rx="7" fill="url(#logoGrad)" />
+                            <path d="M8 10L12 14L8 18" stroke="white" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M14 18H20" stroke="white" stroke-width="2" stroke-linecap="round" />
+                            <defs>
+                                <linearGradient id="logoGrad" x1="0" y1="0" x2="28" y2="28"
+                                    gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#6366f1" />
+                                    <stop offset="100%" stop-color="#06b6d4" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name">CodeForge</span>
+                        <span class="brand-tagline">Online Compiler</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-center">
+                <div class="lang-tabs" id="lang-tabs" role="tablist" aria-label="Programming Language">
+                    <!-- Tabs populated by JS -->
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button id="font-size-decrease" class="icon-btn" title="Decrease Font Size"
+                    aria-label="Decrease font size">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14" />
+                    </svg>
+                </button>
+                <span id="font-size-display" class="font-size-badge">14px</span>
+                <button id="font-size-increase" class="icon-btn" title="Increase Font Size"
+                    aria-label="Increase font size">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5v14" />
+                    </svg>
+                </button>
+
+
+
+                <button id="history-toggle" class="icon-btn history-icon-btn" title="Run History (Ctrl+H)"
+                    aria-label="Toggle run history" style="position:relative;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <span class="history-badge hidden" id="history-count">0</span>
+                </button>
+
+                <div class="divider-v"></div>
+
+                <button id="run-btn" class="run-btn" title="Run Code (Ctrl+Enter)" aria-label="Run code">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    <span>Run</span>
+                    <kbd>Ctrl+↵</kbd>
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== HISTORY SIDEBAR ===== -->
+        <aside id="history-sidebar" class="history-sidebar" aria-label="Run History" aria-hidden="true">
+            <div class="history-hdr">
+                <span class="history-hdr-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Run History
+                </span>
+                <div class="history-hdr-actions">
+                    <button id="export-history" class="mini-btn" title="Export as JSON">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Export
+                    </button>
+                    <button id="clear-history" class="mini-btn" title="Clear all history">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-1 14H6L5 6" />
+                        </svg>
+                        Clear All
+                    </button>
+                    <button id="history-close" class="icon-btn" title="Close" style="width:28px;height:28px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="history-search-wrap">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" id="history-search" class="history-search" placeholder="Search history..."
+                    aria-label="Search run history">
+            </div>
+            <div class="history-list" id="history-list">
+                <div class="history-empty" id="history-empty">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        opacity="0.2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <p>No runs yet.<br>Execute some code and it'll appear here.</p>
+                </div>
+            </div>
+        </aside>
+        <div id="history-backdrop" class="history-backdrop"></div>
+
+        <!-- ===== MAIN WORKSPACE ===== -->
+        <main class="workspace" role="main">
+
+            <!-- Editor Panel -->
+            <section class="panel panel-editor" aria-label="Code Editor">
+                <div class="panel-titlebar">
+                    <div class="panel-title-left">
+                        <span class="panel-dot red"></span>
+                        <span class="panel-dot yellow"></span>
+                        <span class="panel-dot green"></span>
+                        <span class="panel-title-text">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="16 18 22 12 16 6" />
+                                <polyline points="8 6 2 12 8 18" />
+                            </svg>
+                            Editor
+                        </span>
+                    </div>
+                    <div class="panel-title-right">
+                        <button id="copy-code" class="mini-btn" title="Copy code" aria-label="Copy code">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                            </svg>
+                            Copy
+                        </button>
+                        <button id="clear-editor" class="mini-btn" title="Clear editor" aria-label="Clear editor">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path d="M19 6l-1 14H6L5 6" />
+                                <path d="M10 11v6M14 11v6" />
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-wrap">
+                    <textarea id="code-editor" aria-label="Code editor"></textarea>
+                </div>
+                <div class="editor-statusbar" id="editor-statusbar">
+                    <span id="cursor-pos">Ln 1, Col 1</span>
+                    <span id="char-count">0 chars</span>
+                    <span id="lang-mode-badge">Python</span>
+                </div>
+            </section>
+
+            <!-- Right Column -->
+            <div class="right-column">
+
+                <!-- Stdin Panel -->
+                <section class="panel panel-stdin" aria-label="Standard Input">
+                    <div class="panel-titlebar">
+                        <div class="panel-title-left">
+                            <span class="panel-title-text">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="9 10 4 15 9 20" />
+                                    <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+                                </svg>
+                                Standard Input
+                            </span>
+                        </div>
+                        <div class="panel-title-right">
+                            <button id="clear-input" class="mini-btn" aria-label="Clear input">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path d="M19 6l-1 14H6L5 6" />
+                                </svg>
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="stdin-input" class="stdin-area"
+                        placeholder="Enter program input here (one value per line)..." spellcheck="false"
+                        aria-label="Standard input"></textarea>
+                </section>
+
+                <!-- Output Panel -->
+                <section class="panel panel-output" aria-label="Program Output">
+                    <div class="panel-titlebar">
+                        <div class="panel-title-left">
+                            <span class="panel-title-text">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                                </svg>
+                                Output
+                            </span>
+                            <span id="exec-time-badge" class="exec-time hidden"></span>
+                        </div>
+                        <div class="panel-title-right">
+                            <button id="copy-output" class="mini-btn" title="Copy output" aria-label="Copy output">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                                </svg>
+                                Copy
+                            </button>
+                            <button id="clear-output" class="mini-btn" aria-label="Clear output">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path d="M19 6l-1 14H6L5 6" />
+                                </svg>
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div class="output-wrap" id="output-wrap">
+                        <div class="output-placeholder" id="output-placeholder">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" opacity="0.35">
+                                <polygon points="5 3 19 12 5 21 5 3" />
+                            </svg>
+                            <p>Press <kbd>Ctrl+Enter</kbd> or click <strong>Run</strong> to execute</p>
+                        </div>
+                        <pre id="output" class="output-text hidden" aria-live="polite"
+                            aria-label="Program output"></pre>
+                    </div>
+                    <div class="output-statusbar" id="output-statusbar">
+                        <span id="output-status" class="status-idle">
+                            <span class="status-dot"></span>
+                            Ready
+                        </span>
+                        <span id="exit-code-badge" class="hidden"></span>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer" role="contentinfo">
+            <span class="footer-brand">CodeForge</span>
+            <span class="footer-sep">·</span>
+            <span id="footer-lang-count" class="footer-info">Detecting compilers...</span>
+            <span class="footer-sep">·</span>
+            <span class="footer-info">Uses locally installed compilers &amp; interpreters</span>
+        </footer>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- ===== LOADING OVERLAY ===== -->
+    <div id="loading-overlay" class="loading-overlay hidden" aria-hidden="true">
+        <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <p class="loading-title">Executing Code</p>
+            <p class="loading-sub" id="loading-lang-label">Running your program...</p>
+            <div class="loading-progress">
+                <div class="loading-bar" id="loading-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
