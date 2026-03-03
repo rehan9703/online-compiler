@@ -28,7 +28,7 @@ const LANGUAGES = {
         name: 'JavaScript',
         emoji: '🟨',
         mode: 'javascript',
-        defaultCode: `// JavaScript (Node.js)\nconsole.log("Hello, World!");\n\nconst readline = require('readline');\nconst rl = readline.createInterface({ input: process.stdin });\n\nrl.question('Enter your name: ', (name) => {\n    console.log(\`Welcome, \${name}!\`);\n    rl.close();\n});\n`
+        defaultCode: `// JavaScript (Node.js)\\nconsole.log("Hello, World!");\\n\\n// Read standard input provided before run\\nconst fs = require('fs');\\ntry {\\n    const input = fs.readFileSync(0, 'utf-8').trim();\\n    if (input) {\\n        console.log(\`Received input: \${input}\`);\\n    } else {\\n        console.log("No standard input provided.");\\n    }\\n} catch (e) {\\n    // Ignore if no stdin\\n}\\n`
     },
     c: {
         name: 'C',
@@ -74,21 +74,9 @@ const LANGUAGES = {
     },
     typescript: {
         name: 'TypeScript',
-        emoji: '🔷',
+        emoji: '📘',
         mode: 'text/typescript',
-        defaultCode: `// TypeScript — Hello World\nconst greeting: string = "Hello, World!";
-console.log(greeting);
-
-const add = (a: number, b: number): number => a + b;
-console.log("2 + 3 =", add(2, 3));
-
-interface Person { name: string; age: number; }
-const people: Person[] = [
-    { name: 'Alice', age: 30 },
-    { name: 'Bob',   age: 25 },
-];
-people.forEach(p => console.log(\`\${p.name} is \${p.age} years old\`));
-`
+        defaultCode: `// TypeScript\\ninterface User {\\n    name: string;\\n    id: number;\\n}\\n\\nconst user: User = {\\n    name: "CodeForge",\\n    id: 1\\n};\\nconsole.log(\`Hello, \${user.name}!\`);\\n\\n// Read standard input provided before run\\nimport * as fs from 'fs';\\ntry {\\n    const input = fs.readFileSync(0, 'utf-8').trim();\\n    if (input) {\\n        console.log(\`Received input: \${input}\`);\\n    } else {\\n        console.log("No standard input provided.");\\n    }\\n} catch (e) {}\\n`
     },
     batch: {
         name: 'Batch',
