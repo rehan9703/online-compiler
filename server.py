@@ -14,19 +14,22 @@ from pathlib import Path
 from flask import Flask, request, jsonify, send_from_directory, Response
 from flask_cors import CORS
 
+# Find the robust python binary path (prevents sys.executable pointing to gunicorn wrapper)
+PYTHON_BIN = shutil.which('python3') or shutil.which('python') or sys.executable
+
 # ── App Setup ───────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent.resolve()
 app = Flask(__name__, static_folder=str(BASE_DIR), static_url_path='')
 CORS(app)
 
-# ── Static File Serving ─────────────────────────────────────
+# ── General Routes ──────────────────────────────────────────
 @app.route('/')
-def index():
-    return send_from_directory(str(BASE_DIR), 'index.html')
+def serve_index():
+    return send_from_directory(BASE_DIR, 'index.html')
 
-@app.route('/<path:path>')
-def serve_static(path):
-    full_path = BASE_DIR / path
+@app.route('/<path:filename>')
+def serve_static(filename):
+    full_path = BASE_DIR / filename
     if full_path.is_file():
         mime, _ = mimetypes.guess_type(str(full_path))
         return Response(full_path.read_bytes(), mimetype=mime or 'text/plain')
@@ -38,8 +41,8 @@ LANGUAGES = {
         'display': 'Python',
         'extension': 'py',
         'kind': 'interpreted',
-        'run_cmd': [sys.executable],
-        'version_cmd': [sys.executable, '--version'],
+        'run_cmd': [PYTHON_BIN],
+        'version_cmd': [PYTHON_BIN, '--version'],
     },
     'javascript': {
         'display': 'JavaScript',
@@ -115,8 +118,8 @@ LANGUAGES = {
         'display': 'SQL',
         'extension': 'sql',
         'kind': 'sql',  # special kind
-        'run_cmd': [sys.executable],  # uses built-in sqlite3 module
-        'version_cmd': [sys.executable, '-c', 'import sqlite3; print(sqlite3.sqlite_version)'],
+        'run_cmd': [PYTHON_BIN],  # uses built-in sqlite3 module
+        'version_cmd': [PYTHON_BIN, '-c', 'import sqlite3; print(sqlite3.sqlite_version)'],
     },
 }
 
@@ -282,7 +285,7 @@ def _dispatch(lang_id, cfg, code, stdin, temp_dir):
                 "    print(f'Error: {e}', file=sys.stderr)\n"
                 "    sys.exit(1)\n"
             )
-            run = _run_process([sys.executable, '-c', sql_runner], stdin=code, timeout=RUN_TIMEOUT)
+            run = _run_process([PYTHON_BIN, '-c', sql_runner], stdin=code, timeout=RUN_TIMEOUT)
             return jsonify({
                 'stdout':             run['stdout'],
                 'stderr':             run['stderr'],
