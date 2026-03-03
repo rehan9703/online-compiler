@@ -4,6 +4,7 @@ Flask server that executes code using locally installed compilers/interpreters.
 """
 
 import os
+import sys
 import subprocess
 import tempfile
 import shutil
@@ -37,8 +38,8 @@ LANGUAGES = {
         'display': 'Python',
         'extension': 'py',
         'kind': 'interpreted',
-        'run_cmd': ['python'],
-        'version_cmd': ['python', '--version'],
+        'run_cmd': [sys.executable],
+        'version_cmd': [sys.executable, '--version'],
     },
     'javascript': {
         'display': 'JavaScript',
@@ -114,8 +115,8 @@ LANGUAGES = {
         'display': 'SQL',
         'extension': 'sql',
         'kind': 'sql',  # special kind
-        'run_cmd': ['python'],  # uses built-in sqlite3 module
-        'version_cmd': ['python', '-c', 'import sqlite3; print(sqlite3.sqlite_version)'],
+        'run_cmd': [sys.executable],  # uses built-in sqlite3 module
+        'version_cmd': [sys.executable, '-c', 'import sqlite3; print(sqlite3.sqlite_version)'],
     },
 }
 
@@ -281,7 +282,7 @@ def _dispatch(lang_id, cfg, code, stdin, temp_dir):
                 "    print(f'Error: {e}', file=sys.stderr)\n"
                 "    sys.exit(1)\n"
             )
-            run = _run_process(['python', '-c', sql_runner], stdin=code, timeout=RUN_TIMEOUT)
+            run = _run_process([sys.executable, '-c', sql_runner], stdin=code, timeout=RUN_TIMEOUT)
             return jsonify({
                 'stdout':             run['stdout'],
                 'stderr':             run['stderr'],
