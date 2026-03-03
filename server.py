@@ -104,8 +104,8 @@ LANGUAGES = {
         'display': 'TypeScript',
         'extension': 'ts',
         'kind': 'interpreted',
-        'run_cmd': ['tsx'],
-        'version_cmd': ['tsx', '--version'],  # fast check — tsx itself downloads on first run
+        'run_cmd': ['npx.cmd' if os.name == 'nt' else 'npx', '--yes', 'tsx'],
+        'version_cmd': ['npx.cmd' if os.name == 'nt' else 'npx', '--yes', 'tsx', '--version'],  # fast check — tsx itself downloads on first run
     },
     'batch': {
         'display': 'Batch',
