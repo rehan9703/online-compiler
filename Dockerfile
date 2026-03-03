@@ -29,5 +29,5 @@ COPY . .
 # Expose port
 EXPOSE 5000
 
-# Run with gunicorn for production (4 workers)
-CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:5000", "--timeout", "60", "server:app"]
+# Run with gunicorn for production (4 workers), using dynamic $PORT
+CMD gunicorn --workers 4 --bind 0.0.0.0:${PORT:-5000} --timeout 60 server:app
