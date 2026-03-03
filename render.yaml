@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: codeforge
+    env: docker
+    plan: free
+    branch: main
