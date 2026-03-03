@@ -196,9 +196,9 @@ function switchLanguage(langId) {
     editor.setOption('mode', lang.mode);
 
     // Only replace if still on the original default (don't stomp user edits silently)
-    const prevDefault = LANGUAGES[prevLang].defaultCode.trim();
+    const prevDefault = prevLang && LANGUAGES[prevLang] ? LANGUAGES[prevLang].defaultCode.trim() : '';
     const curVal = editor.getValue().trim();
-    if (curVal === '' || curVal === prevDefault) {
+    if (curVal === '' || curVal === prevDefault || prevLang === null) {
         editor.setValue(lang.defaultCode);
     } else {
         // Show a non-blocking inline notice instead of a confirm() dialog
@@ -234,9 +234,11 @@ async function loadAvailableLanguages() {
             availableLanguages = data.languages.map(l => l.id).filter(id => LANGUAGES[id]);
             buildLanguageTabs();
 
-            // Ensure currentLanguage is valid
+            // Ensure currentLanguage is valid and update editor if it changes
             if (!availableLanguages.includes(currentLanguage)) {
-                currentLanguage = availableLanguages[0];
+                const fallback = availableLanguages[0];
+                currentLanguage = null; // force the switch to apply
+                switchLanguage(fallback);
             }
 
             document.getElementById('footer-lang-count').textContent =

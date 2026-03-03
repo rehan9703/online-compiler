@@ -34,6 +34,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/go/go.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/rust/rust.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/shell/shell.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/sql/sql.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/closebrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/edit/matchbrackets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/comment/comment.min.js"></script>
@@ -237,7 +238,7 @@
                                     <polyline points="9 10 4 15 9 20" />
                                     <path d="M20 4v7a4 4 0 0 1-4 4H4" />
                                 </svg>
-                                Standard Input
+                                Standard Input (Provide Before Run)
                             </span>
                         </div>
                         <div class="panel-title-right">
@@ -252,8 +253,8 @@
                         </div>
                     </div>
                     <textarea id="stdin-input" class="stdin-area"
-                        placeholder="Enter program input here (one value per line)..." spellcheck="false"
-                        aria-label="Standard input"></textarea>
+                        placeholder="Expected to read input? Type it here before clicking Run (e.g., input for scanf, cin, input())..."
+                        spellcheck="false" aria-label="Standard input"></textarea>
                 </section>
 
                 <!-- Output Panel -->
