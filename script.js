@@ -28,7 +28,7 @@ const LANGUAGES = {
         name: 'JavaScript',
         emoji: '🟨',
         mode: 'javascript',
-        defaultCode: `// JavaScript (Node.js)\\nconsole.log("Hello, World!");\\n\\n// Read standard input provided before run\\nconst fs = require('fs');\\ntry {\\n    const input = fs.readFileSync(0, 'utf-8').trim();\\n    if (input) {\\n        console.log(\`Received input: \${input}\`);\\n    } else {\\n        console.log("No standard input provided.");\\n    }\\n} catch (e) {\\n    // Ignore if no stdin\\n}\\n`
+        defaultCode: `// JavaScript (Node.js)\nconsole.log("Hello, World!");\n\n// If you need to read standard input, uncomment the lines below:\n// const fs = require('fs');\n// const input = fs.readFileSync(0, 'utf-8').trim();\n// if (input) console.log(\`Input: \${input}\`);\n`
     },
     c: {
         name: 'C',
@@ -76,7 +76,7 @@ const LANGUAGES = {
         name: 'TypeScript',
         emoji: '📘',
         mode: 'text/typescript',
-        defaultCode: `// TypeScript\\ninterface User {\\n    name: string;\\n    id: number;\\n}\\n\\nconst user: User = {\\n    name: "CodeForge",\\n    id: 1\\n};\\nconsole.log(\`Hello, \${user.name}!\`);\\n\\n// Read standard input provided before run\\nimport * as fs from 'fs';\\ntry {\\n    const input = fs.readFileSync(0, 'utf-8').trim();\\n    if (input) {\\n        console.log(\`Received input: \${input}\`);\\n    } else {\\n        console.log("No standard input provided.");\\n    }\\n} catch (e) {}\\n`
+        defaultCode: `// TypeScript\ninterface User {\n    name: string;\n    id: number;\n}\n\nconst user: User = {\n    name: "CodeForge",\n    id: 1\n};\nconsole.log(\`Hello, \${user.name}!\`);\n\n// If you need to read standard input, uncomment the lines below:\n// const fs = require('fs');\n// const input = fs.readFileSync(0, 'utf-8').trim();\n// if (input) console.log(\`Input: \${input}\`);\n`
     },
     batch: {
         name: 'Batch',
