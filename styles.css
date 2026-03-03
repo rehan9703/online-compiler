@@ -129,6 +129,14 @@ body {
     transition: transform var(--dur) var(--ease-bounce);
 }
 
+.brand-logo-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 6px;
+    /* soften the edges of the square image */
+}
+
 .brand-logo:hover {
     transform: scale(1.08) rotate(-3deg);
 }
