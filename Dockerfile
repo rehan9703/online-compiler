@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     golang-go \
     sqlite3 \
     curl \
-    && npm install -g npx tsx \
+    && npm install -g npx ts-node typescript \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
