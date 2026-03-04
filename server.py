@@ -62,7 +62,7 @@ LANGUAGES = {
         'display': 'C++',
         'extension': 'cpp',
         'kind': 'compiled',
-        'compile_cmd': ['g++', '{src}', '-o', '{out}', '-std=c++17'],
+        'compile_cmd': ['g++', '{src}', '-o', '{out}', '-std=c++17', '-lm', '-lboost_system'],
         'version_cmd': ['g++', '--version'],
     },
     'java': {
