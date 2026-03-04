@@ -856,31 +856,31 @@ function autoDetectInputs(isPreRun = false) {
 
     } else if (currentLanguage === 'java') {
         const nextLineCount = (code.match(/\.(?:next|nextLine|nextInt|nextDouble)\s*\(/g) || []).length;
-        const javaRegex = /System\.out\.print(?:ln)?\s*\(\s*"([^"]+)"\s*\)\s*;\s*\w+\.(?:next)/g;
+        const javaRegex = /System\.out\.print(?:ln)?\s*\(\s*"([^"]+)"\s*\)\s*;\s*(?:[A-Za-z0-9_]+\s*=\s*)?[A-Za-z0-9_]+\.(?:next|nextLine|nextInt|nextDouble)\s*\(/g;
         let match;
         let foundStrings = 0;
         while ((match = javaRegex.exec(code)) !== null) { prompts.push(match[1]); foundStrings++; }
-        if (nextLineCount > foundStrings) addGeneric(1, "Provide Java input (Scanner):");
+        if (nextLineCount > foundStrings) addGeneric(nextLineCount - foundStrings, "Provide Java input (Scanner):");
 
     } else if (currentLanguage === 'go') {
         const scanCount = (code.match(/fmt\.Scanf?\s*\(|\.ReadString\s*\(/g) || []).length;
-        const goRegex = /fmt\.Print(?:f|ln)?\s*\(\s*"([^"]+)"\s*\)(?:\s*;|\s*\n)\s*(?:fmt\.Scan|.*\.ReadString)/g;
+        const goRegex = /fmt\.Print(?:f|ln)?\s*\(\s*"([^"]+)"\s*\)(?:\s*;|\s*\n)\s*(?:[A-Za-z0-9_,\s]+:=\s*)?(?:fmt\.Scan|.*\.ReadString)/g;
         let match;
         let foundStrings = 0;
         while ((match = goRegex.exec(code)) !== null) { prompts.push(match[1]); foundStrings++; }
-        if (scanCount > foundStrings) addGeneric(1, "Provide Go input:");
+        if (scanCount > foundStrings) addGeneric(scanCount - foundStrings, "Provide Go input:");
 
     } else if (currentLanguage === 'rust') {
         const readLineCount = (code.match(/\.read_line\s*\(/g) || []).length;
-        const rustRegex = /print(?:ln)?!\s*\(\s*"([^"]+)"/g;
+        const rustRegex = /print(?:ln)?!\s*\(\s*"([^"]+)"\s*\)\s*;(?:.*?)\.read_line/gs;
         let match;
         let foundStrings = 0;
         while ((match = rustRegex.exec(code)) !== null) { prompts.push(match[1]); foundStrings++; }
-        if (readLineCount > foundStrings) addGeneric(1, "Provide Rust input:");
+        if (readLineCount > foundStrings) addGeneric(readLineCount - foundStrings, "Provide Rust input:");
 
     } else if (currentLanguage === 'ruby') {
         const getsCount = (code.match(/\bgets\b/g) || []).length;
-        const rbRegex = /(?:print|puts)\s+(?:'([^']+)'|"([^"]+)")(?:\s*;|\s*\n)\s*\w*\s*=?\s*gets/g;
+        const rbRegex = /(?:print|puts)\s+(?:'([^']+)'|"([^"]+)")(?:\s*;|\s*\n)\s*[A-Za-z0-9_]+\s*=\s*gets/g;
         let match;
         let foundStrings = 0;
         while ((match = rbRegex.exec(code)) !== null) { prompts.push(match[1] || match[2]); foundStrings++; }
@@ -888,7 +888,7 @@ function autoDetectInputs(isPreRun = false) {
 
     } else if (currentLanguage === 'php') {
         const fgetsCount = (code.match(/fgets\s*\(\s*STDIN\s*\)/gi) || []).length;
-        const phpRegex = /(?:echo|print)\s*(?:\(\s*)?(?:'([^']+)'|"([^"]+)")(?:\s*\))?\s*;/g;
+        const phpRegex = /(?:echo|print)\s*(?:\(\s*)?(?:'([^']+)'|"([^"]+)")(?:\s*\))?\s*;\s*(?:\$[A-Za-z0-9_]+\s*=\s*)?(?:trim\s*\(\s*)?fgets\s*\(\s*STDIN/g;
         let match;
         let foundStrings = 0;
         while ((match = phpRegex.exec(code)) !== null) { prompts.push(match[1] || match[2]); foundStrings++; }
@@ -941,6 +941,29 @@ function autoDetectInputs(isPreRun = false) {
         group.appendChild(input);
         list.appendChild(group);
     });
+
+    // Add a unified bulk input area at the bottom for loops/conditionals
+    // because regex cannot predict how many times a loop asks for input!
+    const bulkGroup = document.createElement('div');
+    bulkGroup.className = 'dynamic-input-group';
+    bulkGroup.style.marginTop = '15px';
+    bulkGroup.style.borderTop = '1px solid rgba(255, 255, 255, 0.1)';
+    bulkGroup.style.paddingTop = '10px';
+
+    const bulkLabel = document.createElement('label');
+    bulkLabel.innerHTML = '<strong>Additional / Loop Inputs:</strong><br><span style="font-size: 0.8em; opacity: 0.7;">(If your code uses loops or needs more inputs, type them here, one per line)</span>';
+
+    const bulkInput = document.createElement('textarea');
+    bulkInput.className = 'dynamic-input-field dynamic-bulk-area';
+    bulkInput.placeholder = 'Value 1\\nValue 2\\nValue 3...';
+    bulkInput.style.minHeight = '60px';
+    bulkInput.style.resize = 'vertical';
+    bulkInput.dataset.bulk = 'true';
+
+    bulkGroup.appendChild(bulkLabel);
+    bulkGroup.appendChild(bulkInput);
+    list.appendChild(bulkGroup);
+
     return true; // Prompts found and UI shown
 }
 
