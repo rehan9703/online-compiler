@@ -823,43 +823,88 @@ function autoDetectInputs(isPreRun = false) {
     const code = editor.getValue();
     let prompts = [];
 
-    // Heuristics per language for detecting standard input prompts
-    if (currentLanguage === 'c' || currentLanguage === 'cpp') {
-        const cRegex = /(?:printf\s*\(\s*"([^"]+)"|cout\s*<<\s*"([^"]+)")/g;
+    // Helper to add a generic prompt if specific ones aren't found
+    const addGeneric = (count, defaultText = "Provide input:") => {
+        for (let i = 0; i < count; i++) prompts.push(defaultText);
+    };
+
+    if (currentLanguage === 'python') {
+        const matches = [...code.matchAll(/input\s*\((.*?)\)/g)];
+        matches.forEach(m => {
+            const inner = m[1].trim();
+            if (inner && (inner.startsWith('"') || inner.startsWith("'"))) {
+                prompts.push(inner.slice(1, -1)); // Remove quotes
+            } else {
+                prompts.push("Provide Python input:");
+            }
+        });
+    } else if (currentLanguage === 'c') {
+        const scanfCount = (code.match(/scanf\s*\(/g) || []).length;
+        const cRegex = /printf\s*\(\s*"([^"]+)"\s*\)\s*;\s*scanf/g;
         let match;
-        while ((match = cRegex.exec(code)) !== null) prompts.push(match[1] || match[2]);
-    } else if (currentLanguage === 'python') {
-        const pyRegex = /input\s*\(\s*(['"])(.*?)\1\s*\)/g;
+        let foundStrings = 0;
+        while ((match = cRegex.exec(code)) !== null) { prompts.push(match[1]); foundStrings++; }
+        if (scanfCount > foundStrings) addGeneric(scanfCount - foundStrings, "Provide C input (scanf):");
+
+    } else if (currentLanguage === 'cpp') {
+        const cinCount = (code.match(/cin\s*>>/g) || []).length;
+        const cppRegex = /cout\s*<<\s*"([^"]+)"(?:.*?);\s*cin/g;
         let match;
-        while ((match = pyRegex.exec(code)) !== null) prompts.push(match[2]);
+        let foundStrings = 0;
+        while ((match = cppRegex.exec(code)) !== null) { prompts.push(match[1]); foundStrings++; }
+        if (cinCount > foundStrings) addGeneric(cinCount - foundStrings, "Provide C++ input (cin):");
+
     } else if (currentLanguage === 'java') {
-        const javaRegex = /System\.out\.print(?:ln)?\s*\(\s*"([^"]+)"\s*\)/g;
+        const nextLineCount = (code.match(/\.(?:next|nextLine|nextInt|nextDouble)\s*\(/g) || []).length;
+        const javaRegex = /System\.out\.print(?:ln)?\s*\(\s*"([^"]+)"\s*\)\s*;\s*\w+\.(?:next)/g;
         let match;
-        while ((match = javaRegex.exec(code)) !== null) prompts.push(match[1]);
+        let foundStrings = 0;
+        while ((match = javaRegex.exec(code)) !== null) { prompts.push(match[1]); foundStrings++; }
+        if (nextLineCount > foundStrings) addGeneric(1, "Provide Java input (Scanner):");
+
     } else if (currentLanguage === 'go') {
-        const goRegex = /fmt\.Print(?:f|ln)?\s*\(\s*"([^"]+)"/g;
+        const scanCount = (code.match(/fmt\.Scanf?\s*\(|\.ReadString\s*\(/g) || []).length;
+        const goRegex = /fmt\.Print(?:f|ln)?\s*\(\s*"([^"]+)"\s*\)(?:\s*;|\s*\n)\s*(?:fmt\.Scan|.*\.ReadString)/g;
         let match;
-        while ((match = goRegex.exec(code)) !== null) prompts.push(match[1]);
+        let foundStrings = 0;
+        while ((match = goRegex.exec(code)) !== null) { prompts.push(match[1]); foundStrings++; }
+        if (scanCount > foundStrings) addGeneric(1, "Provide Go input:");
+
     } else if (currentLanguage === 'rust') {
+        const readLineCount = (code.match(/\.read_line\s*\(/g) || []).length;
         const rustRegex = /print(?:ln)?!\s*\(\s*"([^"]+)"/g;
         let match;
-        while ((match = rustRegex.exec(code)) !== null) prompts.push(match[1]);
+        let foundStrings = 0;
+        while ((match = rustRegex.exec(code)) !== null) { prompts.push(match[1]); foundStrings++; }
+        if (readLineCount > foundStrings) addGeneric(1, "Provide Rust input:");
+
     } else if (currentLanguage === 'ruby') {
-        const rbRegex = /(?:print|puts)\s+(?:'([^']+)'|"([^"]+)")/g;
+        const getsCount = (code.match(/\bgets\b/g) || []).length;
+        const rbRegex = /(?:print|puts)\s+(?:'([^']+)'|"([^"]+)")(?:\s*;|\s*\n)\s*\w*\s*=?\s*gets/g;
         let match;
-        while ((match = rbRegex.exec(code)) !== null) prompts.push(match[1] || match[2]);
+        let foundStrings = 0;
+        while ((match = rbRegex.exec(code)) !== null) { prompts.push(match[1] || match[2]); foundStrings++; }
+        if (getsCount > foundStrings) addGeneric(getsCount - foundStrings, "Provide Ruby input (gets):");
+
     } else if (currentLanguage === 'php') {
-        const phpRegex = /(?:echo|print)\s*(?:\(\s*)?(?:'([^']+)'|"([^"]+)")/g;
+        const fgetsCount = (code.match(/fgets\s*\(\s*STDIN\s*\)/gi) || []).length;
+        const phpRegex = /(?:echo|print)\s*(?:\(\s*)?(?:'([^']+)'|"([^"]+)")(?:\s*\))?\s*;/g;
         let match;
-        while ((match = phpRegex.exec(code)) !== null) prompts.push(match[1] || match[2]);
+        let foundStrings = 0;
+        while ((match = phpRegex.exec(code)) !== null) { prompts.push(match[1] || match[2]); foundStrings++; }
+        if (fgetsCount > foundStrings) addGeneric(fgetsCount - foundStrings, "Provide PHP input (STDIN):");
+
     } else if (currentLanguage === 'javascript' || currentLanguage === 'typescript') {
-        const jsRegex = /(?:console\.log|process\.stdout\.write)\s*\(\s*(?:'([^']+)'|"([^"]+)"|`([^`]+)`)/g;
-        let match;
-        while ((match = jsRegex.exec(code)) !== null) prompts.push(match[1] || match[2] || match[3]);
+        const fsReadCount = (code.match(/fs\.readFileSync\s*\(\s*0/g) || []).length;
+        if (fsReadCount > 0) addGeneric(1, "Provide JS/TS input (fs.readFileSync):");
+
     } else if (currentLanguage === 'batch') {
-        const batRegex = /set\s+\/p\s+\w+="([^"]+)"/gi;
+        const batRegex = /set\s+\/p\s+\w+="([^"]*)"/gi;
         let match;
-        while ((match = batRegex.exec(code)) !== null) prompts.push(match[1]);
+        let foundStrings = 0;
+        while ((match = batRegex.exec(code)) !== null) { prompts.push(match[1] || "Provide Batch input:"); foundStrings++; }
+        const setPCount = (code.match(/set\s+\/p\s+/gi) || []).length;
+        if (setPCount > foundStrings) addGeneric(setPCount - foundStrings, "Provide Batch input:");
     }
 
     const container = document.getElementById('dynamic-inputs-container');
