@@ -347,7 +347,10 @@ async function executeCode() {
         // UI is currently hidden, check if we need to show it
         const requiresInput = autoDetectInputs(true);
         if (requiresInput) {
-            showToast('Please answer the standard input questions first, then hit Run again!', 'warning', 4000);
+            // Flash the container to grab attention
+            dynamicContainer.style.transition = 'background-color 0.3s';
+            dynamicContainer.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+            setTimeout(() => dynamicContainer.style.backgroundColor = 'transparent', 800);
 
             // Give focus to the first generated input
             setTimeout(() => {
@@ -820,25 +823,43 @@ function autoDetectInputs(isPreRun = false) {
     const code = editor.getValue();
     let prompts = [];
 
-    // Heuristics per language
+    // Heuristics per language for detecting standard input prompts
     if (currentLanguage === 'c' || currentLanguage === 'cpp') {
         const cRegex = /(?:printf\s*\(\s*"([^"]+)"|cout\s*<<\s*"([^"]+)")/g;
         let match;
-        while ((match = cRegex.exec(code)) !== null) {
-            prompts.push(match[1] || match[2]);
-        }
+        while ((match = cRegex.exec(code)) !== null) prompts.push(match[1] || match[2]);
     } else if (currentLanguage === 'python') {
         const pyRegex = /input\s*\(\s*(['"])(.*?)\1\s*\)/g;
         let match;
-        while ((match = pyRegex.exec(code)) !== null) {
-            prompts.push(match[2]);
-        }
+        while ((match = pyRegex.exec(code)) !== null) prompts.push(match[2]);
     } else if (currentLanguage === 'java') {
         const javaRegex = /System\.out\.print(?:ln)?\s*\(\s*"([^"]+)"\s*\)/g;
         let match;
-        while ((match = javaRegex.exec(code)) !== null) {
-            prompts.push(match[1]);
-        }
+        while ((match = javaRegex.exec(code)) !== null) prompts.push(match[1]);
+    } else if (currentLanguage === 'go') {
+        const goRegex = /fmt\.Print(?:f|ln)?\s*\(\s*"([^"]+)"/g;
+        let match;
+        while ((match = goRegex.exec(code)) !== null) prompts.push(match[1]);
+    } else if (currentLanguage === 'rust') {
+        const rustRegex = /print(?:ln)?!\s*\(\s*"([^"]+)"/g;
+        let match;
+        while ((match = rustRegex.exec(code)) !== null) prompts.push(match[1]);
+    } else if (currentLanguage === 'ruby') {
+        const rbRegex = /(?:print|puts)\s+(?:'([^']+)'|"([^"]+)")/g;
+        let match;
+        while ((match = rbRegex.exec(code)) !== null) prompts.push(match[1] || match[2]);
+    } else if (currentLanguage === 'php') {
+        const phpRegex = /(?:echo|print)\s*(?:\(\s*)?(?:'([^']+)'|"([^"]+)")/g;
+        let match;
+        while ((match = phpRegex.exec(code)) !== null) prompts.push(match[1] || match[2]);
+    } else if (currentLanguage === 'javascript' || currentLanguage === 'typescript') {
+        const jsRegex = /(?:console\.log|process\.stdout\.write)\s*\(\s*(?:'([^']+)'|"([^"]+)"|`([^`]+)`)/g;
+        let match;
+        while ((match = jsRegex.exec(code)) !== null) prompts.push(match[1] || match[2] || match[3]);
+    } else if (currentLanguage === 'batch') {
+        const batRegex = /set\s+\/p\s+\w+="([^"]+)"/gi;
+        let match;
+        while ((match = batRegex.exec(code)) !== null) prompts.push(match[1]);
     }
 
     const container = document.getElementById('dynamic-inputs-container');

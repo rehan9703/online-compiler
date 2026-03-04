@@ -4,6 +4,7 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
+ENV NODE_PATH=/usr/local/lib/node_modules:/usr/lib/node_modules
 
 # ── Step 1: System compilers, runtimes, and tools ───────────────────────
 RUN apt-get update && apt-get install -y \
