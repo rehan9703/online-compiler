@@ -942,28 +942,6 @@ function autoDetectInputs(isPreRun = false) {
         list.appendChild(group);
     });
 
-    // Add a unified bulk input area at the bottom for loops/conditionals
-    // because regex cannot predict how many times a loop asks for input!
-    const bulkGroup = document.createElement('div');
-    bulkGroup.className = 'dynamic-input-group';
-    bulkGroup.style.marginTop = '15px';
-    bulkGroup.style.borderTop = '1px solid rgba(255, 255, 255, 0.1)';
-    bulkGroup.style.paddingTop = '10px';
-
-    const bulkLabel = document.createElement('label');
-    bulkLabel.innerHTML = '<strong>Additional / Loop Inputs:</strong><br><span style="font-size: 0.8em; opacity: 0.7;">(If your code uses loops or needs more inputs, type them here, one per line)</span>';
-
-    const bulkInput = document.createElement('textarea');
-    bulkInput.className = 'dynamic-input-field dynamic-bulk-area';
-    bulkInput.placeholder = 'Value 1\\nValue 2\\nValue 3...';
-    bulkInput.style.minHeight = '60px';
-    bulkInput.style.resize = 'vertical';
-    bulkInput.dataset.bulk = 'true';
-
-    bulkGroup.appendChild(bulkLabel);
-    bulkGroup.appendChild(bulkInput);
-    list.appendChild(bulkGroup);
-
     return true; // Prompts found and UI shown
 }
 
