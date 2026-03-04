@@ -12,8 +12,6 @@ RUN apt-get update && apt-get install -y \
     build-essential curl wget git \
     # Python
     python3 python3-pip python3-dev \
-    # Node.js (LTS)
-    nodejs npm \
     # C / C++ with Boost
     gcc g++ libboost-all-dev \
     # Java JDK 17
@@ -31,6 +29,11 @@ RUN apt-get update && apt-get install -y \
     # Utilities
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# ── Step 1.5: Install Modern Node.js (v20) via NodeSource ───────────────
+# The default Ubuntu nodejs is too old for modern typescript (SyntaxError on ??)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
 
 # ── Step 2: Node.js global packages (TypeScript + popular libs) ──────────
 RUN npm install -g \
